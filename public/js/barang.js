@@ -45,29 +45,41 @@ $(document).ready(function () {
     const harga = $("#harga");
     const stok = $("#stok");
     const supplier = $("#supplier");
+    const toastNotif = $("#toastNotif");
+    const btnSubmit = $("#btnSubmitTambahBarang");
+    const btnCloseModal = $(".btnCloseModal");
+    const btnCloseModalEdit = $(".btnCloseModalEdit");
 
     $(document).on("submit", "#formTambahBarang", function (e) {
         e.preventDefault();
-        const btnSubmit = $("#btnSubmitTambahBarang");
-        const btnCloseModal = $(".btnCloseModal");
         let data = $("#formTambahBarang").serialize();
 
+        saveOrUpdate(data);
+    });
+
+    $(document).on("submit", "#formUpdateBarang", function (e) {
+        e.preventDefault();
+        let data = $("#formUpdateBarang").serialize();
+        let getId = $("#formUpdateBarang #idBarang").val();
+        saveOrUpdate(data, getId);
+    });
+
+    $(document).on("click", ".edit-btn", function (e) {
+        e.preventDefault();
+        let id = $(this).data("id");
         $.ajax({
-            url: "/barang-ajax",
-            type: "POST",
-            data: data,
-            beforeSend: function () {
-                btnSubmit.addClass("loading");
-            },
+            url: "barang-ajax/" + id + "/edit",
+            type: "GET",
+            beforeSend: function () {},
             success: function (response) {
-                btnSubmit.removeClass("loading");
-                console.log(response);
-                if (response.error) {
-                    handleErrorValidation(response);
-                } else {
-                    btnCloseModal.trigger("click");
-                    $("#table-barang").DataTable().ajax.reload();
-                }
+                $("#modal-edit-barang").prop("checked", true);
+                $("#formUpdateBarang #idBarang").val(id);
+                $("#formUpdateBarang #nama_barang").val(
+                    response.data.nama_barang
+                );
+                $("#formUpdateBarang #harga").val(response.data.harga);
+                $("#formUpdateBarang #stok").val(response.data.stok);
+                $("#formUpdateBarang #supplier").val(response.data.supplier_id);
             },
         });
     });
@@ -75,6 +87,18 @@ $(document).ready(function () {
     $(document).on("click", ".btn-tambah-barang", function () {
         resetForm();
     });
+
+    $(document).on("click", ".btn-close-toast", function () {
+        toastNotif.toggle("hidden");
+    });
+
+    function showToast(message) {
+        toastNotif.removeClass("hidden");
+        $(".message-toast").text(message);
+        setTimeout(function () {
+            toastNotif.toggle("hidden");
+        }, 3000);
+    }
 
     function resetForm() {
         $("#formTambahBarang")[0].reset();
@@ -85,7 +109,7 @@ $(document).ready(function () {
 
     function handleErrorValidation(response) {
         $(".error-message").remove();
-        $("#formTambahBarang input").removeClass("input-error");
+        $(".form-modal input").removeClass("input-error");
         supplier.removeClass("select-error");
         if ("nama_barang" in response.data_errors) {
             namaBarang.addClass("input-error");
@@ -114,5 +138,39 @@ $(document).ready(function () {
                 <span class="label-text-alt text-error text-xs">${response.data_errors.supplier_id[0]}</span>
                 </label>`);
         }
+    }
+
+    function saveOrUpdate(formData, id = "") {
+        if (!id) {
+            var setUrl = "/barang-ajax";
+            var setType = "POST";
+        } else {
+            var setUrl = "/barang-ajax/" + id;
+            var setType = "PUT";
+        }
+
+        $.ajax({
+            url: setUrl,
+            type: setType,
+            data: formData,
+            beforeSend: function () {
+                btnSubmit.addClass("loading");
+            },
+            success: function (response) {
+                btnSubmit.removeClass("loading");
+                console.log(response);
+                if (response.error) {
+                    handleErrorValidation(response);
+                } else {
+                    if (!id) {
+                        btnCloseModal.trigger("click");
+                    } else {
+                        btnCloseModalEdit.trigger("click");
+                    }
+                    $("#table-barang").DataTable().ajax.reload();
+                    showToast(response.message);
+                }
+            },
+        });
     }
 });

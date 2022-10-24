@@ -1,4 +1,4 @@
-<div class="container mx-auto mb-10">
+<div class="container mx-auto mb-10" id="navbar">
   <nav class="navbar bg-base-100">
     <div class="navbar-start">
       <div class="dropdown">
@@ -19,7 +19,25 @@
       </ul>
     </div>
     <div class="navbar-end">
-      <a href="#" class="btn btn-primary">Login</a>
+      @auth
+      <div class="dropdown dropdown-end">
+        <label tabindex="0" class="btn btn-ghost btn-circle avatar">
+          <div class="w-10 rounded-full">
+            <img src="https://placeimg.com/80/80/people" />
+          </div>
+        </label>
+        <ul tabindex="0" class="menu menu-compact dropdown-content bg-neutral mt-3 p-2 shadow rounded-box w-52">
+          <form action="{{ route('logout') }}" id="formLogout" method="post">
+            <li>
+              @csrf
+              <a href="javascript:{}" onclick="document.getElementById('formLogout').submit();">Logout</a>
+            </li>
+          </form>
+        </ul>
+      </div>
+      @else
+      <a href="{{ route('login') }}" class="btn btn-primary">Login</a>
+      @endauth
     </div>
   </nav>
 </div>

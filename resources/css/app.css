@@ -5,3 +5,8 @@
 .nav-active {
     @apply text-primary font-bold;
 }
+
+.select-error {
+    --tw-border-opacity: 1;
+    border-color: hsl(var(--er) / var(--tw-border-opacity));
+}

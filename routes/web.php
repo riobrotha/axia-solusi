@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\BarangController;
 use App\Models\Supplier;
 use Illuminate\Support\Facades\Route;
@@ -17,12 +18,22 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('home');
+})->middleware('auth');
+
+Route::get('/home', function() {
+    return redirect('/');
 });
+
+Route::get('/login', [AuthController::class, 'index'])->name('login')->middleware('guest');
+
+Route::post('/login', [AuthController::class, 'authenticate'])->name('login.action');
+
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/barang', function () {
     $data['suppliers'] = Supplier::latest()->get();
     return view('barang', $data);
-});
+})->middleware('auth');
 
 
-Route::resource('barang-ajax', BarangController::class);
+Route::resource('barang-ajax', BarangController::class)->middleware('auth');

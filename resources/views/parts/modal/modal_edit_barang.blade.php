@@ -1,18 +1,18 @@
 <!-- Put this part before </body> tag -->
-<input type="checkbox" id="modal-tambah-barang" class="modal-toggle" />
+<input type="checkbox" id="modal-edit-barang" class="modal-toggle" />
 <div class="modal">
   <div class="modal-box w-11/12 max-w-5xl relative">
-    <label for="modal-tambah-barang" class="btn btn-sm btn-circle absolute right-5 top-3 btnCloseModal">✕</label>
-    <h3 class="font-bold text-lg mb-5 mt-5">Form Tambah Barang</h3>
-    <form action="#" id="formTambahBarang" class="form-modal">
+    <label for="modal-edit-barang" class="btn btn-sm btn-circle absolute right-5 top-3 btnCloseModalEdit">✕</label>
+    <h3 class="font-bold text-lg mb-5 mt-5">Form Edit Barang</h3>
+    <form action="#" id="formUpdateBarang" class="form-modal">
       @csrf
+      <input type="hidden" id="idBarang">
       <div class="form-control w-full mb-2">
         <label class="label">
           <span class="label-text">Nama Barang</span>
         </label>
         <input type="text" placeholder="Nama Barang disini.." class="input input-bordered w-full" name="nama_barang"
           id="nama_barang" autocomplete="off" />
-
       </div>
       <div class="form-control w-full mb-2">
         <label class="label">
