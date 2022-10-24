@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BarangController;
+use App\Models\Supplier;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,7 +20,8 @@ Route::get('/', function () {
 });
 
 Route::get('/barang', function () {
-    return view('barang');
+    $data['suppliers'] = Supplier::latest()->get();
+    return view('barang', $data);
 });
 
 

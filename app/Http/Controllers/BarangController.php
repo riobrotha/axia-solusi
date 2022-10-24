@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Barang;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
 class BarangController extends Controller
@@ -15,7 +17,10 @@ class BarangController extends Controller
      */
     public function index()
     {
-        $data = Barang::orderBy('created_at', 'desc')->get();
+        $data = Barang::with(['created_by_name:id,name', 'supplier:id,nama_supplier'])->latest()->get();
+        foreach($data as $item) {
+            $item->conv_created_at = Carbon::parse($item->created_at, 'UTC')->tz('Asia/Jakarta')->format('l, d M Y H:i');
+        }
         return DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('action', fn($data) => view('html.action_barang')->with('data', $data))
@@ -40,7 +45,35 @@ class BarangController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validation = Validator::make($request->all(), [
+            'nama_barang'   => 'required|max:100',
+            'harga'         => 'required|numeric',
+            'stok'          => 'required|numeric',
+            'supplier_id'   => 'required'
+        ], [
+            'supplier_id.required'  => 'The supplier field is required.'
+        ]);
+
+        if($validation->fails()) {
+            $response = [
+                'error'         => true, 
+                'data_errors'   => $validation->errors()
+            ];
+            return response()->json($response);
+        }
+
+
+        $data = $request->all();
+        $data['created_by']  = 1;
+        $data['updated_by']  = 1;
+
+        Barang::create($data);
+
+        return response()->json([
+            'error'         => false,
+            'input_data'    => $data,
+            'message'       => 'Berhasil menambahkan data barang!'
+        ]);
     }
 
     /**

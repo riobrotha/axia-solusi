@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-white">
+<html lang="en" class="h-full">
 
 <head>
-    <meta charset="UTF-8">
+    <meta charset=" UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Transaction App</title>
@@ -39,6 +39,20 @@
 
             margin-bottom: 10px;
             /*bg-gray-200*/
+        }
+
+
+        .dataTables_length label,
+        .dataTables_length select {
+            color: #a6adba;
+        }
+
+        .dataTables_filter label {
+            color: #a6adba;
+        }
+
+        .dataTables_info {
+            color: #a6adba !important;
         }
 
         /*Row Hover*/
@@ -92,7 +106,7 @@
     </style>
 </head>
 
-<body data-theme="light" class="bg-white">
+<body data-theme="dark">
     @include('parts.navbar')
 
     @yield('content')
