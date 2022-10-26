@@ -6,7 +6,7 @@
   <!-- The button to open modal -->
   <label for="modal-tambah-barang" class="btn modal-button btn-tambah-barang">tambah barang</label>
 
-  @include('parts.modal.modal_tambah_barang')
+  @include('parts.modal.barang.modal_tambah_barang')
   <div class="overflow-x-auto xl:overflow-x-hidden mt-7">
     <table class="table table-compact w-full" id="table-barang">
       <thead>
@@ -24,7 +24,7 @@
     </table>
   </div>
 
-  @include('parts.modal.modal_edit_barang')
+  @include('parts.modal.barang.modal_edit_barang')
 </div>
 
 
@@ -32,5 +32,5 @@
 
 
 @push('my-script')
-<script src="js/barang.js?16"></script>
+<script src="js/barang.js?19"></script>
 @endpush

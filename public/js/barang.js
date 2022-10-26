@@ -41,9 +41,6 @@ $(document).ready(function () {
         ],
     });
 
-    const namaBarang = $("#nama_barang");
-    const harga = $("#harga");
-    const stok = $("#stok");
     const supplier = $("#supplier");
     const toastNotif = $("#toastNotif");
     const btnSubmit = $("#btnSubmitTambahBarang");
@@ -64,9 +61,37 @@ $(document).ready(function () {
         saveOrUpdate(data, getId);
     });
 
-    $(document).on("click", ".edit-btn", function (e) {
+    $(document).on("click", ".del-btn", function (e) {
         e.preventDefault();
         let id = $(this).data("id");
+        if (confirm("Anda yakin ingin menghapus data ini?")) {
+            //setup ajax with token csrf
+            $.ajaxSetup({
+                headers: {
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
+                        "content"
+                    ),
+                },
+            });
+
+            $.ajax({
+                url: "/barang-ajax/" + id,
+                type: "DELETE",
+                success: function (response) {
+                    showToast(response.message);
+                    $("#table-barang").DataTable().ajax.reload();
+                },
+            });
+        }
+    });
+
+    $(document).on("click", ".edit-btn", function (e) {
+        e.preventDefault();
+        $(".error-message").remove();
+        $(".form-modal input").removeClass("input-error");
+        $("select[name=supplier_id]").removeClass("select-error");
+        let id = $(this).data("id");
+
         $.ajax({
             url: "barang-ajax/" + id + "/edit",
             type: "GET",
@@ -88,10 +113,6 @@ $(document).ready(function () {
         resetForm();
     });
 
-    $(document).on("click", ".btn-close-toast", function () {
-        toastNotif.toggle("hidden");
-    });
-
     function showToast(message) {
         toastNotif.removeClass("hidden");
         $(".message-toast").text(message);
@@ -111,33 +132,26 @@ $(document).ready(function () {
         $(".error-message").remove();
         $(".form-modal input").removeClass("input-error");
         supplier.removeClass("select-error");
-        if ("nama_barang" in response.data_errors) {
-            namaBarang.addClass("input-error");
-            namaBarang.after(`<label class="label error-message">
-                <span class="label-text-alt text-error text-xs">${response.data_errors.nama_barang[0]}</span>
-                </label>`);
-        }
 
-        if ("harga" in response.data_errors) {
-            harga.addClass("input-error");
-            harga.after(`<label class="label error-message">
-                <span class="label-text-alt text-error text-xs">${response.data_errors.harga[0]}</span>
-                </label>`);
-        }
+        let allDataErrors = response.data_errors;
 
-        if ("stok" in response.data_errors) {
-            stok.addClass("input-error");
-            stok.after(`<label class="label error-message">
-                <span class="label-text-alt text-error text-xs">${response.data_errors.stok[0]}</span>
-                </label>`);
-        }
+        Object.keys(allDataErrors).forEach((key) => {
+            const getInput = $("input[name=" + key + "]");
+            if (key != "supplier_id") {
+                getInput.addClass("input-error");
+                getInput.after(`<label class="label error-message">
+                        <span class="label-text-alt text-error text-xs">${allDataErrors[key][0]}</span>
+                        </label>`);
+            }
 
-        if ("supplier_id" in response.data_errors) {
-            supplier.addClass("select-error");
-            supplier.after(`<label class="label error-message">
-                <span class="label-text-alt text-error text-xs">${response.data_errors.supplier_id[0]}</span>
+            if (key == "supplier_id") {
+                const getSelect = $("select[name=" + key + "]");
+                getSelect.addClass("select-error");
+                getSelect.after(`<label class="label error-message">
+                <span class="label-text-alt text-error text-xs">${allDataErrors[key][0]}</span>
                 </label>`);
-        }
+            }
+        });
     }
 
     function saveOrUpdate(formData, id = "") {

@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Barang;
+use App\Models\Supplier;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
-class BarangController extends Controller
+class SupplierController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,12 +17,12 @@ class BarangController extends Controller
      */
     public function index()
     {
-        $data = Barang::with(['created_by_name:id,name', 'supplier:id,nama_supplier'])->where('created_by', auth()->user()->id)->latest()->get();
+        $data = Supplier::latest()->get();
 
         foreach($data as $item) {
             $item->conv_created_at = Carbon::parse($item->created_at, 'UTC')->tz('Asia/Jakarta')->format('l, d M Y H:i');
         }
-        
+
         return DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('action', fn($data) => view('html.action')->with('data', $data))
@@ -47,34 +47,29 @@ class BarangController extends Controller
      */
     public function store(Request $request)
     {
+
         $validation = Validator::make($request->all(), [
-            'nama_barang'   => 'required|max:100',
-            'harga'         => 'required|numeric',
-            'stok'          => 'required|numeric',
-            'supplier_id'   => 'required'
-        ], [
-            'supplier_id.required'  => 'The supplier field is required.'
+            'nama_supplier' => 'required|max:200',
+            'phone'         => 'required|max_digits:16|numeric',
+            'alamat'        => 'required'
         ]);
 
-        if($validation->fails()) {
-            $response = [
-                'error'         => true, 
+        if ($validation->fails()) {
+            return response()->json([
+                'error'         => true,
                 'data_errors'   => $validation->errors()
-            ];
-            return response()->json($response);
+            ]);
         }
 
-
         $data = $request->all();
-        $data['created_by']  = auth()->user()->id;
-        $data['updated_by']  = auth()->user()->id;
 
-        Barang::create($data);
+        Supplier::create($data);
 
+        
         return response()->json([
             'error'         => false,
             'input_data'    => $data,
-            'message'       => 'Berhasil menambahkan data barang!'
+            'message'       => 'Berhasil menambahkan data supplier!'
         ]);
     }
 
@@ -97,7 +92,7 @@ class BarangController extends Controller
      */
     public function edit($id)
     {
-        $data = Barang::firstWhere('id', $id);
+        $data = Supplier::firstWhere('id', $id);
 
         return response()->json(['data' => $data]);
     }
@@ -112,38 +107,27 @@ class BarangController extends Controller
     public function update(Request $request, $id)
     {
         $validation = Validator::make($request->all(), [
-            'nama_barang'   => 'required|max:100',
-            'harga'         => 'required|numeric',
-            'stok'          => 'required|numeric',
-            'supplier_id'   => 'required'
-        ], [
-            'supplier_id.required'  => 'The supplier field is required.'
+            'nama_supplier' => 'required|max:200',
+            'phone'         => 'required|max_digits:16|numeric',
+            'alamat'        => 'required'
         ]);
 
-        if($validation->fails()) {
-            $response = [
-                'error'         => true, 
+        if ($validation->fails()) {
+            return response()->json([
+                'error'         => true,
                 'data_errors'   => $validation->errors()
-            ];
-            return response()->json($response);
+            ]);
         }
 
+        $data = $request->except('_token');
 
-        $data = [
-            'nama_barang'   => $request->nama_barang,
-            'harga'         => $request->harga,
-            'stok'          => $request->stok,
-            'supplier_id'   => $request->supplier_id
-        ];
-        $data['created_by']  = auth()->user()->id;
-        $data['updated_by']  = auth()->user()->id;
+        Supplier::where('id', $id)->update($data);
 
-        Barang::where('id', $id)->update($data);
-
+        
         return response()->json([
             'error'         => false,
             'input_data'    => $data,
-            'message'       => 'Berhasil update data barang!'
+            'message'       => 'Berhasil update data supplier!'
         ]);
     }
 
@@ -155,11 +139,6 @@ class BarangController extends Controller
      */
     public function destroy($id)
     {
-        Barang::where('id', $id)->delete();
-
-        return response()->json([
-            'error' => false,
-            'message'   => 'Berhasil menghapus data'
-        ]);
+        //
     }
 }

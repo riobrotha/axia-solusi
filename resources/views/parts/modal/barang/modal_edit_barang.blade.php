@@ -41,7 +41,7 @@
 
       </div>
       <div class="modal-action">
-        <button type="submit" id="btnSubmitTambahBarang" class="btn">Submit</button>
+        <button type="submit" id="btnSubmitEditBarang" class="btn">Submit</button>
       </div>
     </form>
   </div>
