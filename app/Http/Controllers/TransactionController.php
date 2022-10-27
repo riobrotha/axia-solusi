@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Transaction;
 use App\Http\Requests\StoreTransactionRequest;
 use App\Http\Requests\UpdateTransactionRequest;
+use App\Models\Barang;
 use App\Models\TransactionDetail;
+use Carbon\Carbon;
 
 class TransactionController extends Controller
 {
@@ -40,23 +42,39 @@ class TransactionController extends Controller
     public function store(StoreTransactionRequest $request)
     {
         $dataTransactionDetails =  json_decode($request->transactions, true);
+        $totalTransaction = $request->transaction_total;
 
         $storeTransaction = Transaction::create([
-            'user_id'   => auth()->user()->id
+            'user_id'               => auth()->user()->id,
+            'transaction_total'     => $totalTransaction
         ]);
 
         $transactionId = $storeTransaction->id;
 
         for($i = 0; $i < count($dataTransactionDetails); $i++) {
             $dataTransactionDetails[$i]['transaction_id'] = $transactionId;
-            unset($dataTransactionDetails[$i]['namaBarang']);
+            $dataTransactionDetails[$i]['subtotal'] = $dataTransactionDetails[$i]['harga'] * $dataTransactionDetails[$i]['qty'];
+            unset($dataTransactionDetails[$i]['nama_barang']);
+
+            $dataTransactionDetails[$i]['created_at'] = Carbon::parse(date('Y-m-d H:i:s'), 'UTC')->tz('Asia/Jakarta')->format('Y-m-d H:i:s');
+            $dataTransactionDetails[$i]['updated_at'] = Carbon::parse(date('Y-m-d H:i:s'), 'UTC')->tz('Asia/Jakarta')->format('Y-m-d H:i:s');
+
+            $stok = Barang::select(['stok'])->where('id', $dataTransactionDetails[$i]['barang_id'])->first();
+            $updateStok = $stok->stok - (int) $dataTransactionDetails[$i]['qty'];
+
+            Barang::where('id', $dataTransactionDetails[$i]['barang_id'])->update([
+                'stok'  => $updateStok
+            ]);
         }
     
         //print_r($dataTransactionDetails);
 
         TransactionDetail::insert($dataTransactionDetails);
         
-
+        return response()->json([
+            'error' => false,
+            'message'   => 'Berhasil menyimpan transaksi'
+        ]);
     }
 
     /**

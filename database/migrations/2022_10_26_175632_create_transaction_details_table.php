@@ -18,6 +18,8 @@ return new class extends Migration
             $table->unsignedBigInteger('transaction_id');
             $table->unsignedBigInteger('barang_id');
             $table->unsignedInteger('qty');
+            $table->double('harga');
+            $table->double('subtotal');
             $table->timestamps();
         });
     }

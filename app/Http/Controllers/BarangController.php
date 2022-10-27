@@ -22,12 +22,10 @@ class BarangController extends Controller
 
         foreach($data as $item) {
             $item->conv_created_at = Carbon::parse($item->created_at, 'UTC')->tz('Asia/Jakarta')->format('l, d M Y H:i');
+            $item->price = $item->harga;
 
             $item->harga = 'Rp ' . number_format($item->harga, 0, ',', '.');
 
-            if ($isCrud == 1) {
-                $item->nama_barang = $item->nama_barang . ' (' . $item->stok . 'x)';
-            } 
         }
         
         return DataTables::of($data)

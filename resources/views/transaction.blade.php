@@ -4,8 +4,8 @@
 @section('content')
 <div class="container mx-auto">
   <button type="button" class="btn mb-7">Lihat Daftar Transaksi</button>
-  <div class="flex flex-wrap">
-    <div class="w-full self-center lg:w-1/2">
+  <div class="flex flex-wrap lg:flex-nowrap gap-2">
+    <div class="w-full lg:w-1/2">
       {{-- list barang --}}
       <div class="card w-full bg-neutral text-neutral-content">
         <div class="card-body">
@@ -26,16 +26,27 @@
         </div>
       </div>
     </div>
-    <div class="w-full self-center lg:w-1/2">
+    <div class="w-full lg:w-1/2">
       {{-- keranjang --}}
+      <div class="card w-full bg-neutral text-neutral-content">
+        <div class="card-body">
+          <div class="flex justify-between mb-5">
+            <h2 class="card-title">Keranjang</h2>
+            <h2 class="card-title">Total : <span id="totalKeranjang">0</span></h2>
+          </div>
+          <div class="max-h-[21.5rem] overflow-auto" id="itemsSpace">
 
+          </div>
+        </div>
+      </div>
     </div>
   </div>
+  <button type="button" class="btn btn-primary btn-block mt-3" id="btnSaveTransaction">Save Transaction</button>
 </div>
 
 @endsection
 
 
 @push('my-script')
-<script src="js/transaction.js?4"></script>
+<script src="js/transaction.js?20" type="module"></script>
 @endpush
