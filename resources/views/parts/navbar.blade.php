@@ -12,6 +12,7 @@
         <ul tabindex="0" class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-neutral rounded-box w-52">
           <li><a href="/barang" class="{{ Request::is('barang') ? 'nav-active' : '' }}">Data Barang</a></li>
           <li><a href="/supplier" class="{{ Request::is('supplier') ? 'nav-active' : '' }}">Data Supplier</a></li>
+          <li><a href="/transaction" class="{{ Request::is('transaction') ? 'nav-active' : '' }}">Transaction</a></li>
         </ul>
       </div>
       <a href="/" class="btn btn-ghost normal-case text-xl">AxiaSolusi</a>
@@ -20,6 +21,7 @@
       <ul class="menu menu-horizontal p-0">
         <li><a href="/barang" class="{{ Request::is('barang') ? 'nav-active' : '' }}">Data Barang</a></li>
         <li><a href="/supplier" class="{{ Request::is('supplier') ? 'nav-active' : '' }}">Data Supplier</a></li>
+        <li><a href="/transaction" class="{{ Request::is('transaction') ? 'nav-active' : '' }}">Transaction</a></li>
       </ul>
     </div>
     <div class="navbar-end items-end flex">

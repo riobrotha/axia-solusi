@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Transaction;
 use App\Http\Requests\StoreTransactionRequest;
 use App\Http\Requests\UpdateTransactionRequest;
+use App\Models\TransactionDetail;
 
 class TransactionController extends Controller
 {
@@ -15,7 +16,7 @@ class TransactionController extends Controller
      */
     public function index()
     {
-        $data = Transaction::with('transaction_detail.barang')->get();
+        $data = Transaction::with('transaction_detail.barang.supplier')->get();
 
         return response()->json(['data' => $data]);
     }
@@ -38,7 +39,24 @@ class TransactionController extends Controller
      */
     public function store(StoreTransactionRequest $request)
     {
-        //
+        $dataTransactionDetails =  json_decode($request->transactions, true);
+
+        $storeTransaction = Transaction::create([
+            'user_id'   => auth()->user()->id
+        ]);
+
+        $transactionId = $storeTransaction->id;
+
+        for($i = 0; $i < count($dataTransactionDetails); $i++) {
+            $dataTransactionDetails[$i]['transaction_id'] = $transactionId;
+            unset($dataTransactionDetails[$i]['namaBarang']);
+        }
+    
+        //print_r($dataTransactionDetails);
+
+        TransactionDetail::insert($dataTransactionDetails);
+        
+
     }
 
     /**

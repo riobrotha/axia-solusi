@@ -17,15 +17,22 @@ class BarangController extends Controller
      */
     public function index()
     {
+        $isCrud = request()->c;
         $data = Barang::with(['created_by_name:id,name', 'supplier:id,nama_supplier'])->where('created_by', auth()->user()->id)->latest()->get();
 
         foreach($data as $item) {
             $item->conv_created_at = Carbon::parse($item->created_at, 'UTC')->tz('Asia/Jakarta')->format('l, d M Y H:i');
+
+            $item->harga = 'Rp ' . number_format($item->harga, 0, ',', '.');
+
+            if ($isCrud == 1) {
+                $item->nama_barang = $item->nama_barang . ' (' . $item->stok . 'x)';
+            } 
         }
         
         return DataTables::of($data)
         ->addIndexColumn()
-        ->addColumn('action', fn($data) => view('html.action')->with('data', $data))
+        ->addColumn('action', fn($data) => view('html.action')->with(['data' => $data, 'isCrud'   => $isCrud]))
         ->make(true);
     }
 
