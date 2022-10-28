@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateTransactionRequest;
 use App\Models\Barang;
 use App\Models\TransactionDetail;
 use Carbon\Carbon;
+use Yajra\DataTables\Facades\DataTables;
 
 class TransactionController extends Controller
 {
@@ -18,9 +19,16 @@ class TransactionController extends Controller
      */
     public function index()
     {
-        $data = Transaction::with('transaction_detail.barang.supplier')->get();
+        $data = Transaction::with(['user','transaction_detail.barang.supplier'])->get();
 
-        return response()->json(['data' => $data]);
+        foreach($data as $item) {
+            $item->conv_created_at = Carbon::parse($item->created_at, 'UTC')->tz('Asia/Jakarta')->format('l, d M Y H:i');
+        }
+
+        return DataTables::of($data)
+        ->addIndexColumn()
+        ->addColumn('action', fn($data) => view('html.action')->with('data', $data))
+        ->make(true);
     }
 
     /**

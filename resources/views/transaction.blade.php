@@ -3,7 +3,7 @@
 
 @section('content')
 <div class="container mx-auto">
-  <button type="button" class="btn mb-7">Lihat Daftar Transaksi</button>
+  <a href="/transaction-list" class="btn mb-7">Lihat Daftar Transaksi</a>
   <div class="flex flex-wrap lg:flex-nowrap gap-2">
     <div class="w-full lg:w-1/2">
       {{-- list barang --}}

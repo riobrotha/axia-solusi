@@ -46,6 +46,10 @@ Route::get('/transaction', function () {
     return view('transaction');
 })->middleware('auth');
 
+Route::get('/transaction-list', function () {
+    return view('transaction_list');
+})->middleware('auth');
+
 
 Route::resource('barang-ajax', BarangController::class)->middleware('auth');
 

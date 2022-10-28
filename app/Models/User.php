@@ -48,4 +48,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Barang::class, 'created_by');
     }
+
+    public function transaction()
+    {
+        return $this->hasOne(Transaction::class, 'user_id');
+    }
 }
